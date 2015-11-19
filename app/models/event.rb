@@ -1,6 +1,9 @@
 class Event < ActiveRecord::Base
 
-  validates :name, :location, presence: true
+  validates :name, presence: true, uniqueness: true
+  validates :slug, uniqueness: true
+
+  validates :location, presence: true
 
   validates :description, length: { minimum: 25 }
 
@@ -14,16 +17,31 @@ class Event < ActiveRecord::Base
   }
 
   has_many :registrations, dependent: :destroy
+  has_many :likes, dependent: :destroy
+  has_many :likers, through: :likes, source: :user
+  has_many :categorizations, dependent: :destroy
+  has_many :categories, through: :categorizations
 
 #  validate :price_is_a_multiple_of_fifty_cents
+
+  before_validation :generate_slug
+
+  scope :past, -> { where("starts_at < ?", Time.now).order(:starts_at) }
+  scope :upcoming, -> { where("starts_at >= ?", Time.now).order(:starts_at) }
+  scope :free, -> { upcoming.where(price: 0).order(:name) }
+  scope :recent, ->(max=3) { past.limit(max) }
+
+  # def self.past
+  #   where("starts_at < ?", Time.now).order(:starts_at)
+  # end
 
   def free?
     price.blank? || price.zero?
   end
 
-  def self.upcoming
-    where("starts_at >= ?", Time.now).order("starts_at")
-  end
+  # def self.upcoming
+  #   where("starts_at >= ?", Time.now).order(:starts_at)
+  # end
 
   def spots_left
     capacity - registrations.size
@@ -31,5 +49,13 @@ class Event < ActiveRecord::Base
 
   def sold_out?
     spots_left.zero?
+  end
+
+  def to_param
+    slug
+  end
+
+  def generate_slug
+    self.slug ||= name.parameterize if name
   end
 end

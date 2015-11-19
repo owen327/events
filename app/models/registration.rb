@@ -1,8 +1,7 @@
 class Registration < ActiveRecord::Base
+  belongs_to :event
+  belongs_to :user
 
-  validates :name, presence: true
-
-  validates :email, format: { with: /(\S+)@(\S+)/ }
 
   HOW_HEARD_OPTIONS = [
     'Newsletter',
@@ -15,6 +14,5 @@ class Registration < ActiveRecord::Base
 
   validates :how_heard,
             inclusion: { in: HOW_HEARD_OPTIONS }
-            
-  belongs_to :event
+
 end

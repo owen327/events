@@ -3,7 +3,17 @@
     <h1><%= link_to 'Events', root_path %></h1>
     <nav>
       <p>
-        <%= link_to "Tweet Us!", "http://twitter.com/aaff14b0af6f4f5" %>
+        <% if current_user %>
+          <%= link_to current_user.name, current_user %>
+          <%= link_to "Sign Out", session_path, method: :delete,
+                                                  class:"button" %>
+        <% else %>
+          <%= link_to "Sign Up", signup_path, class: "button" %>
+          <%= link_to "Sign In", new_session_path, class: "button" %>
+        <% end %>
+        <%= link_to "Tweet Us!", "http://twitter.com/aaff14b0af6f4f5",
+                                             class: "button" %>
+
       </p>
     </nav>
   </div>
