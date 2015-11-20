@@ -115,9 +115,60 @@ Event.create!([
   }
 ])
 
+User.create!([
+  {
+    name: "Mike",
+    email: "mike@example.com",
+    password: "secret",
+    password_confirmation: "secret",
+    admin: true
+  },
+  {
+    name: "Larry",
+    email: "larry@example.com",
+    password: "secret",
+    password_confirmation: "secret"
+  },
+  {
+    name: "Moe",
+    email: "moe@example.com",
+    password: "secret",
+    password_confirmation: "secret"
+  },
+  {
+    name: "Curly",
+    email: "curly@example.com",
+    password: "secret",
+    password_confirmation: "secret"
+  }
+])
+
+larry = User.find_by(name: "Larry")
+moe = User.find_by(name: "Moe")
+curly = User.find_by(name: "Curly")
+
+Category.create!(name: "Class")
+Category.create!(name: "Conference")
+Category.create!(name: "User Group")
+Category.create!(name: "Fundraiser")
+Category.create!(name: "Social")
+Category.create!(name: "Free")
+Category.create!(name: "Paid")
+Category.create!(name: "Ruby")
+Category.create!(name: "Rails")
+
 event = Event.find_by(name: 'BugSmash')
-event.registrations.create!(name: "Larry", email: "larry@stooges.com", how_heard: 'Newsletter')
-event.registrations.create!(name: "Moe", email: "moe@stooges.com", how_heard: 'Blog Post')
-event.registrations.create!(name: "Curly", email: "curly@stooges.com", how_heard: 'Twitter')
+event.registrations.create!(user: larry, how_heard: 'Newsletter')
+event.registrations.create!(user: moe, how_heard: 'Blog Post')
+event.registrations.create!(user: curly, how_heard: 'Twitter')
+event.likers << larry
+event.likers << moe
+event.categories << Category.find_by(name: 'Social')
+event.categories << Category.find_by(name: 'Free')
+
 event = Event.find_by(name: 'Kata Camp')
-event.registrations.create!(name: "Moe", email: "moe@stooges.com", how_heard: 'Web Search')
+event.registrations.create!(user: moe, how_heard: 'Web Search')
+event.likers << moe
+event.likers << curly
+event.categories << Category.find_by(name: 'Conference')
+event.categories << Category.find_by(name: 'Paid')
